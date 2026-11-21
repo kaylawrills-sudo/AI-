@@ -5,7 +5,10 @@
   "type": "module",
   "description": "AI Object Detection Web App powered by Ultralytics",
   "scripts": {
-   "start": "node server.js",
+    "start": "node server.js",
     "dev": "vercel dev"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.10"
   }
 }

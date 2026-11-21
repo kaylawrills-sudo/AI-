@@ -12,10 +12,19 @@ const resultsList = document.getElementById('resultsList');
 const emptyState = document.getElementById('emptyState');
 const detectionCount = document.getElementById('detectionCount');
 const errorBanner = document.getElementById('errorBanner');
+const uploadTab = document.getElementById('uploadTab');
+const webcamTab = document.getElementById('webcamTab');
+const webcamPanel = document.getElementById('webcamPanel');
+const webcamVideo = document.getElementById('webcamVideo');
+const cameraUnavailable = document.getElementById('cameraUnavailable');
+const startCameraBtn = document.getElementById('startCameraBtn');
+const captureBtn = document.getElementById('captureBtn');
+const stopCameraBtn = document.getElementById('stopCameraBtn');
 
 let selectedFile = null;
 let loadedImage = null;
 let rawPredictions = [];
+let cameraStream = null;
 
 // Update confidence slider display and re-filter existing results
 confThreshold.addEventListener('input', () => {
@@ -52,6 +61,8 @@ fileInput.addEventListener('change', (e) => {
 });
 
 resetBtn.addEventListener('click', () => {
+  stopCamera();
+  setActiveSource('upload');
   selectedFile = null;
   loadedImage = null;
   rawPredictions = [];
@@ -196,7 +207,7 @@ function renderDetections() {
       const boxW = x2 - x1;
       const boxH = y2 - y1;
 
-      ctx.strokeStyle = '#7c3aed';
+      ctx.strokeStyle = '#0f766e';
       ctx.lineWidth = lineWidth;
       ctx.strokeRect(x1, y1, boxW, boxH);
 
@@ -208,7 +219,7 @@ function renderDetections() {
       const pillH = fontSize + 10 * scale;
       const pillY = Math.max(0, y1 - pillH);
 
-      ctx.fillStyle = '#7c3aed';
+      ctx.fillStyle = '#0f766e';
       ctx.fillRect(x1, pillY, textMetrics.width + padX * 2, pillH);
 
       ctx.fillStyle = '#ffffff';
@@ -231,3 +242,89 @@ function escapeHtml(str) {
     "'": '&#39;',
   }[m]));
 }
+
+// Webcam functionality
+webcamTab.addEventListener('click', () => {
+  setActiveSource('webcam');
+});
+
+uploadTab.addEventListener('click', () => {
+  stopCamera();
+  setActiveSource('upload');
+});
+
+function setActiveSource(source) {
+  const isUpload = source === 'upload';
+  uploadTab.classList.toggle('active', isUpload);
+  webcamTab.classList.toggle('active', !isUpload);
+  uploadTab.setAttribute('aria-selected', String(isUpload));
+  webcamTab.setAttribute('aria-selected', String(!isUpload));
+  dropZone.classList.toggle('hidden', !isUpload);
+  webcamPanel.classList.toggle('hidden', isUpload);
+}
+
+startCameraBtn.addEventListener('click', startCamera);
+stopCameraBtn.addEventListener('click', stopCamera);
+
+async function startCamera() {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    cameraUnavailable.classList.remove('hidden');
+    webcamVideo.classList.add('hidden');
+    showError('This browser does not support webcam capture.');
+    return;
+  }
+
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false,
+    });
+    webcamVideo.srcObject = cameraStream;
+    await webcamVideo.play();
+    webcamVideo.classList.remove('hidden');
+    cameraUnavailable.classList.add('hidden');
+    captureBtn.disabled = false;
+    startCameraBtn.classList.add('hidden');
+    stopCameraBtn.classList.remove('hidden');
+  } catch (error) {
+    webcamVideo.classList.add('hidden');
+    cameraUnavailable.classList.remove('hidden');
+    captureBtn.disabled = true;
+    showError(`Unable to access the webcam: ${error.message}`);
+  }
+}
+
+function stopCamera() {
+  if (cameraStream) {
+    cameraStream.getTracks().forEach((track) => track.stop());
+    cameraStream = null;
+  }
+  webcamVideo.srcObject = null;
+  captureBtn.disabled = true;
+  startCameraBtn.classList.remove('hidden');
+  stopCameraBtn.classList.add('hidden');
+  cameraUnavailable.classList.add('hidden');
+  webcamVideo.classList.remove('hidden');
+}
+
+captureBtn.addEventListener('click', () => {
+  if (!cameraStream || webcamVideo.readyState < 2) return;
+
+  const captureCanvas = document.createElement('canvas');
+  captureCanvas.width = webcamVideo.videoWidth;
+  captureCanvas.height = webcamVideo.videoHeight;
+  const captureContext = captureCanvas.getContext('2d');
+  captureContext.drawImage(webcamVideo, 0, 0, captureCanvas.width, captureCanvas.height);
+
+  captureCanvas.toBlob((blob) => {
+    if (!blob) {
+      showError('Could not capture a photo from the webcam.');
+      return;
+    }
+
+    const capturedFile = new File([blob], `webcam-${Date.now()}.jpg`, { type: 'image/jpeg' });
+    stopCamera();
+    setActiveSource('upload');
+    handleFileSelection(capturedFile);
+  }, 'image/jpeg', 0.92);
+});

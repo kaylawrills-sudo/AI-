@@ -34,7 +34,7 @@
   <main class="container main-wrapper">
     <section class="hero">
       <h1>Intelligent <span class="gradient-text">Object Detection</span></h1>
-      <p>Upload an image to identify object classes, confidence scores, and spatial bounding boxes in real time.</p>
+      <p>Upload an image or use your webcam to identify object classes, confidence scores, and spatial bounding boxes in real time.</p>
     </section>
 
     <section class="workspace-grid">
@@ -43,6 +43,11 @@
         <div class="card-header">
           <h2>Image Workspace</h2>
           <button id="resetBtn" class="btn-ghost hidden" type="button">Upload New</button>
+        </div>
+
+        <div class="source-switch" role="tablist" aria-label="Image source">
+          <button id="uploadTab" class="source-tab active" type="button" role="tab" aria-selected="true">Upload</button>
+          <button id="webcamTab" class="source-tab" type="button" role="tab" aria-selected="false">Webcam</button>
         </div>
 
         <!-- Drag & Drop Zone -->
@@ -57,6 +62,18 @@
           </div>
           <h3>Drop your image here, or <span class="purple-link">browse</span></h3>
           <p class="hint">Supports JPG, PNG, and WEBP up to 10MB</p>
+        </div>
+
+        <div id="webcamPanel" class="webcam-panel hidden">
+          <video id="webcamVideo" autoplay playsinline muted></video>
+          <div id="cameraUnavailable" class="camera-unavailable hidden">
+            <p>Camera unavailable. Allow camera access and try again.</p>
+          </div>
+          <div class="webcam-actions">
+            <button id="startCameraBtn" class="btn-primary" type="button">Start Camera</button>
+            <button id="captureBtn" class="btn-primary" type="button" disabled>Capture Photo</button>
+            <button id="stopCameraBtn" class="btn-ghost hidden" type="button">Stop</button>
+          </div>
         </div>
 
         <!-- Image + Bounding Box Canvas -->
