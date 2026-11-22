@@ -73,7 +73,7 @@ resetBtn.addEventListener('click', () => {
   resultsList.classList.add('hidden');
   emptyState.classList.remove('hidden');
   errorBanner.classList.add('hidden');
-  detectionCount.textContent = '0 found';
+  detectionCount.textContent = '0 objects';
   detectBtn.disabled = true;
 });
 
@@ -165,7 +165,8 @@ function renderDetections() {
   const minConf = Number(confThreshold.value) / 100;
   const filtered = rawPredictions.filter((item) => (item.confidence ?? 0) >= minConf);
 
-  detectionCount.textContent = `${filtered.length} found`;
+  detectionCount.textContent = `${filtered.length} ${filtered.length === 1 ? 'object' : 'objects'}`;
+
   emptyState.classList.add('hidden');
   resultsList.classList.remove('hidden');
   resultsList.innerHTML = '';
@@ -207,7 +208,7 @@ function renderDetections() {
       const boxW = x2 - x1;
       const boxH = y2 - y1;
 
-      ctx.strokeStyle = '#0f766e';
+      ctx.strokeStyle = '#b7c900';
       ctx.lineWidth = lineWidth;
       ctx.strokeRect(x1, y1, boxW, boxH);
 
@@ -219,10 +220,10 @@ function renderDetections() {
       const pillH = fontSize + 10 * scale;
       const pillY = Math.max(0, y1 - pillH);
 
-      ctx.fillStyle = '#0f766e';
+      ctx.fillStyle = '#171d24';
       ctx.fillRect(x1, pillY, textMetrics.width + padX * 2, pillH);
 
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = '#d9f000';
       ctx.fillText(text, x1 + padX, pillY + fontSize + 2 * scale);
     }
   });
