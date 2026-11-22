@@ -1,9 +1,9 @@
 {
-  "name": "ultralytics-vision-app",
+  "name": "sightscope-ai",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "AI Object Detection Web App powered by Ultralytics",
+  "description": "SightScope AI - an intelligent object detection platform powered by Ultralytics YOLO",
   "scripts": {
     "start": "node server.js",
     "dev": "vercel dev"

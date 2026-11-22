@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VisionAI — Object Detection Studio</title>
+  <meta name="theme-color" content="#10151c" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>SightScope AI — Object Detection Platform</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -12,13 +18,13 @@
 </head>
 <body>
   <aside class="sidebar">
-    <a class="sidebar-brand" href="#" aria-label="Vision AI home">
+    <a class="sidebar-brand" href="#" aria-label="SightScope AI home">
       <span class="brand-mark">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/>
         </svg>
       </span>
-      <span>VISION<span>AI</span></span>
+      <span>SIGHT<span>SCOPE</span></span>
     </a>
 
     <nav class="side-nav" aria-label="Primary navigation">
@@ -46,9 +52,10 @@
     <header class="topbar">
       <div>
         <div class="breadcrumb"><span>Platform</span><b>/</b><strong>Object Detection</strong></div>
-        <h1>Vision workspace</h1>
+        <h1>SightScope workspace</h1>
       </div>
       <div class="topbar-actions">
+        <button id="installAppBtn" class="install-app-btn hidden" type="button">Install app</button>
         <div class="model-chip" id="models">
           <span class="model-chip-icon">Y</span>
           <div><small>Active model</small><strong>YOLO Detection</strong></div>

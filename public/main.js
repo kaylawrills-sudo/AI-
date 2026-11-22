@@ -20,11 +20,13 @@ const cameraUnavailable = document.getElementById('cameraUnavailable');
 const startCameraBtn = document.getElementById('startCameraBtn');
 const captureBtn = document.getElementById('captureBtn');
 const stopCameraBtn = document.getElementById('stopCameraBtn');
+const installAppBtn = document.getElementById('installAppBtn');
 
 let selectedFile = null;
 let loadedImage = null;
 let rawPredictions = [];
 let cameraStream = null;
+let deferredInstallPrompt = null;
 
 // Update confidence slider display and re-filter existing results
 confThreshold.addEventListener('input', () => {
@@ -345,3 +347,25 @@ document.addEventListener('keydown', (event) => {
     fileInput.click();
   }
 });
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  installAppBtn?.classList.remove('hidden');
+});
+
+installAppBtn?.addEventListener('click', async () => {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  installAppBtn.classList.add('hidden');
+});
+
+window.addEventListener('appinstalled', () => {
+  installAppBtn?.classList.add('hidden');
+});
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
