@@ -83,6 +83,11 @@ function handleFileSelection(file) {
     return;
   }
 
+  if (file.size > 10 * 1024 * 1024) {
+    showError('This image is larger than 10 MB. Please choose a smaller file.');
+    return;
+  }
+
   selectedFile = file;
   rawPredictions = [];
   errorBanner.classList.add('hidden');
@@ -146,16 +151,11 @@ detectBtn.addEventListener('click', async () => {
 });
 
 function extractPredictions(apiResponse) {
-  // Ultralytics returns detections inside images[0].results or data[0].results
-  if (apiResponse?.images?.[0]?.results) {
-    return apiResponse.images[0].results;
-  }
-  if (Array.isArray(apiResponse?.data) && apiResponse.data[0]?.results) {
-    return apiResponse.data[0].results;
-  }
-  if (Array.isArray(apiResponse?.results)) {
-    return apiResponse.results;
-  }
+  if (apiResponse?.images?.[0]?.results) return apiResponse.images[0].results;
+  if (Array.isArray(apiResponse?.data) && apiResponse.data[0]?.results) return apiResponse.data[0].results;
+  if (Array.isArray(apiResponse?.results)) return apiResponse.results;
+  if (Array.isArray(apiResponse?.predictions)) return apiResponse.predictions;
+  if (Array.isArray(apiResponse?.data)) return apiResponse.data;
   return [];
 }
 
@@ -327,4 +327,20 @@ captureBtn.addEventListener('click', () => {
     setActiveSource('upload');
     handleFileSelection(capturedFile);
   }, 'image/jpeg', 0.92);
+});
+
+// Platform navigation feedback and keyboard-friendly source switching
+document.querySelectorAll('.nav-item').forEach((item) => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach((navItem) => navItem.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+
+document.addEventListener('keydown', (event) => {
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'u') {
+    event.preventDefault();
+    setActiveSource('upload');
+    fileInput.click();
+  }
 });
